@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WordShop - Tu tienda de productos</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="logo">WordShop</div>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="#home">Inicio</a></li>
+                <li><a href="#categorias">Categorías</a></li>
+                <li><a href="#productos">Productos</a></li>
+                <li><a href="#contacto">Contacto</a></li>
+                <li><a href="#ofertas">Ofertas</a></li>
+            </ul>
+        </nav>
+        <div class="search-container">
+            <input type="text" id="search" placeholder="Buscar productos, marcas y más...">
+            <button id="search-btn"><i class="fas fa-search"></i></button>
+        </div>
+        <div class="user-cart">
+            <a href="#login"><i class="fas fa-user"></i> Mi Cuenta</a>
+            <a href="#cart"><i class="fas fa-shopping-cart"></i> Carrito (<span id="cart-count">0</span>)</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="banner">
+            <h2>Bienvenido a WordShop</h2>
+            <p>Encuentra lo que más te gusta a precios increíbles.</p>
+        </section>
+
+        <section id="categorias">
+            <h2>Categorías</h2>
+            <div class="categorias-grid">
+                <a href="#electronica">Electrónica</a>
+                <a href="#moda">Moda</a>
+                <a href="#hogar">Hogar</a>
+                <a href="#deportes">Deportes</a>
+                <a href="#juguetes">Juguetes</a>
+            </div>
+        </section>
+
+        <section id="productos">
+            <h2>Productos Destacados</h2>
+            <div class="productos-grid" id="productos-grid">
+                <script>
+                    let productos = [];
+                    for (let i = 1; i <= 10; i++) {
+                        let producto = {
+                            id: i,
+                            nombre: `Producto ${i}`,
+                            precio: (Math.random() * 100 + 10).toFixed(2),
+                            imagen: "https://via.placeholder.com/250"
+                        };
+                        productos.push(producto);
+                        document.write(`
+                        <div class="producto">
+                            <img src="${producto.imagen}" alt="${producto.nombre}">
+                            <h3>${producto.nombre}</h3>
+                            <p class="descripcion">Descripción breve del ${producto.nombre}.</p>
+                            <p class="precio">$${producto.precio}</p>
+                            <div class="rating">⭐⭐⭐⭐☆</div>
+                            <button class="btn add-to-cart" onclick="agregarAlCarrito(${i})">Agregar al carrito</button>
+                        </div>
+                        `);
+                    }
+                </script>
+            </div>
+        </section>
+
+        <section id="carrito">
+            <h2>Carrito de Compras</h2>
+            <div id="carrito-items"></div>
+            <p>Subtotal: $<span id="subtotal-carrito">0.00</span></p>
+            <p>Costo de envío: $<span id="envio">5.00</span></p>
+            <p>Total: $<span id="total-carrito">0.00</span></p>
+            <button class="btn" onclick="vaciarCarrito()">Vaciar Carrito</button>
+        </section>
+
+        <section id="contacto">
+            <h2>Contacto</h2>
+            <p>Si tienes preguntas, no dudes en <a href="mailto:contacto@wordshop.com">enviarnos un correo</a>.</p>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 WordShop. Todos los derechos reservados.</p>
+    </footer>
+
+    <script>
+        let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+        const costoEnvio = 5.00;
+        actualizarCarrito();
+
+        function agregarAlCarrito(id) {
+            let producto = productos.find(p => p.id === id);
+            carrito.push(producto);
+            localStorage.setItem("carrito", JSON.stringify(carrito));
+            actualizarCarrito();
+        }
+
+        function actualizarCarrito() {
+            let carritoHTML = "";
+            let subtotal = 0;
+            carrito.forEach((producto, index) => {
+                subtotal += parseFloat(producto.precio);
+                carritoHTML += `
+                <div class="carrito-item">
+                    <img src="${producto.imagen}" width="50" height="50">
+                    <span>${producto.nombre} - $${producto.precio}</span>
+                    <button onclick="eliminarDelCarrito(${index})">Eliminar</button>
+                </div>
+                `;
+            });
+            let total = carrito.length > 0 ? subtotal + costoEnvio : 0;
+            document.getElementById("carrito-items").innerHTML = carritoHTML;
+            document.getElementById("subtotal-carrito").innerText = subtotal.toFixed(2);
+            document.getElementById("envio").innerText = carrito.length > 0 ? costoEnvio.toFixed(2) : "0.00";
+            document.getElementById("total-carrito").innerText = total.toFixed(2);
+            document.getElementById("cart-count").innerText = carrito.length;
+        }
+
+        function eliminarDelCarrito(index) {
+            carrito.splice(index, 1);
+            localStorage.setItem("carrito", JSON.stringify(carrito));
+            actualizarCarrito();
+        }
+
+        function vaciarCarrito() {
+            carrito = [];
+            localStorage.setItem("carrito", JSON.stringify(carrito));
+            actualizarCarrito();
+        }
+    </script>
+</body>
+</html>
